@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  ansible-playground-control:
+    image: ansible-playground-control:0.0.1
+    container_name: ansible-playground-control
+    build:
+      context: ./docker/ansible-playground-control
+      dockerfile: Dockerfile
+    working_dir: /playbook
+    volumes:
+      - ./playbook:/playbook:cached
+    env_file: ./docker/ansible-playground-control/.env
+    networks:
+      - ansible-playground-network
+    tty: true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+  ansible-playground-target:
+    image: ansible-playground-target:0.0.1
+    container_name: ansible-playground-target
+    build:
+      context: ./docker/ansible-playground-target
+      dockerfile: Dockerfile
+    env_file: ./docker/ansible-playground-target/.env
+    networks:
+      - ansible-playground-network
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+networks:
+  ansible-playground-network:
+    name: ansible-playground-network
+    driver: bridge

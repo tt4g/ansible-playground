@@ -1,0 +1,8 @@
+[ansible_playground_group]
+ansible-playground-target
+
+[ansible_playground_group:vars]
+ansible_python_interpreter=/usr/local/bin/python
+ansible_port=22
+ansible_user=root
+ansible_ssh_pass=foobarbaz

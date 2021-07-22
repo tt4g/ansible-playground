@@ -1,0 +1,8 @@
+---
+
+- name: touch
+  hosts: ansible_playground_group
+  tasks:
+    - name: test
+      shell: |
+        echo "Hello Ansible!" > /tmp/foo

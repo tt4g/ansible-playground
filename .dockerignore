@@ -1,0 +1,21 @@
+# Git
+.git
+.gitattributes
+.gitignore
+
+# Config
+.editorconfig
+
+# Docker resources
+docker
+
+# Docker For development
+docker-compose.yml
+
+# Visual Studio Code
+.devcontainer
+.vscode
+.history
+.ionide
+
+README.md
