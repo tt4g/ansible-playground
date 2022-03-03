@@ -1,0 +1,13 @@
+---
+- name: write hostname
+  become: true
+  become_user: "{{ write_hostname__owner }}"
+  ansible.builtin.template:
+    src: templates/write_hostname.j2
+    dest: "{{ write_hostname__dest_path }}"
+    owner: "{{ write_hostname__owner }}"
+    group: "{{ write_hostname__group }}"
+    mode: "{{ write_hostname__mode }}"
+    backup: true
+    follow: false
+    force: true

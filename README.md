@@ -2,27 +2,36 @@
 
 [Ansible](https://www.ansible.com/) Playground on Docker.
 
+## Requirements
+
+* Ansible 2.9 (RedHat latest release version)
+
 ## Launch
 
-Launch Ansible control container and target container.
+Ansible がインストールされたコンテナと操作対象のコンテナを起動する。
 
 ```bash
 $ docker-compose up -d
 ```
 
-### Run Example Playbook
+### Run Playbook
 
-Run Ansible playbook in the running container.
+Ansible の Playbook [ansible/site.yml](./ansible/site.yml) を実行する。
 
 ```bash
-$ docker exec -it ansible-playground-control ansible-playbook -i /playbook/ansible-inventory /playbook/shell_touch.yml
+$ docker-compose exec -it ansible-playground-control ansible-playbook \
+  -i /ansible/inventories/development/hosts.ini \
+  /ansible/site.yml
 # Check generated file.
-$ docker exec -it ansible-playground-target cat /tmp/foo
+$ docker-compose exec ansible-playground-debian-bullseye cat /tmp/ansible_hostname
+$ docker-compose exec ansible-playground-redhat-8 cat /tmp/ansible_hostname
 ```
 
-Run Playbook in shell.
+コンテナ内にアクセスして実行する。
 
 ```bash
-$ docker exec -it  ansible-playground-control sh
-$ ansible-playbook -i /playbook/ansible-inventory /playbook/shell_touch.yml
+$ docker-compose exec ansible-playground-control /bin/bash -l
+$ ansible-playbook \
+  -i /ansible/inventories/development/hosts.ini \
+  /ansible/site.yml
 ```

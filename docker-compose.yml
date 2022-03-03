@@ -1,36 +1,79 @@
-version: "3.8"
+version: "3.6"
+
+x-logging: &X_LOGGING
+  driver: json-file
+  options:
+    max-file: "3"
+    max-size: "3m"
+
+x-unlimited-ulimits: &X_UNLIMITED_ULIMITS
+  memlock:
+    soft: -1
+    hard: -1
 
 services:
   ansible-playground-control:
     image: ansible-playground-control:0.0.1
     container_name: ansible-playground-control
     build:
-      context: ./docker/ansible-playground-control
+      context: ./docker/ansible
       dockerfile: Dockerfile
-    working_dir: /playbook
+      args:
+        - ANSIBLE_UID=${UID:-1000}
+        - ANSIBLE_GID=${GID:-1000}
+        - ANSIBLE_PASSWORD=ansible
+    working_dir: /ansible
     volumes:
-      - ./playbook:/playbook:cached
-    env_file: ./docker/ansible-playground-control/.env
+      - ./ansible:/ansible:cached
+    env_file: ./docker/ansible/.env
     networks:
       - ansible-playground-network
     tty: true
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-  ansible-playground-target:
-    image: ansible-playground-target:0.0.1
-    container_name: ansible-playground-target
+    logging: *X_LOGGING
+    ulimits: *X_UNLIMITED_ULIMITS
+
+  ansible-playground-debian-bullseye:
+    image: ansible-playground-debian-bullseye:0.0.1
+    container_name: ansible-playground-debian-bullseye
     build:
-      context: ./docker/ansible-playground-target
+      context: ./docker/debian-bullseye
       dockerfile: Dockerfile
-    env_file: ./docker/ansible-playground-target/.env
+      args:
+        - USER_UID=${UID:-1000}
+        - USER_GID=${GID:-1000}
+        - USER_PASSWORD=worker
+    env_file: ./docker/debian-bullseye/.env
     networks:
       - ansible-playground-network
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+    logging: *X_LOGGING
+    ulimits: *X_UNLIMITED_ULIMITS
+
+  # Dockerイメージ Red Hat Universal Base Image で作成するコンテナ。
+  # Systemd が有効化されている RedHat UBI Init を使用している関係上、
+  # Systemd が起動するために `/sys/fs/cgroup` をマウントした上で
+  # `/run` ディレクトリを一時的に生成しなければいけない。
+  ansible-playground-redhat-8:
+    image: ansible-playground-redhat:0.0.1
+    container_name: ansible-playground-redhat
+    build:
+      context: ./docker/redhat-universal-base-Image-8
+      dockerfile: Dockerfile
+      args:
+        - USER_UID=${UID:-1000}
+        - USER_GID=${GID:-1000}
+        - USER_PASSWORD=worker
+    env_file: ./docker/redhat-universal-base-Image-8/.env
+    volumes:
+      - type: bind
+        source: /sys/fs/cgroup
+        target: /sys/fs/cgroup
+        read_only: true
+      - type: tmpfs
+        target: /run
+    networks:
+      - ansible-playground-network
+    logging: *X_LOGGING
+    ulimits: *X_UNLIMITED_ULIMITS
 
 networks:
   ansible-playground-network:

@@ -1,0 +1,5 @@
+ansible_connection: ssh
+ansible_port: 22
+ansible_user: worker
+ansible_ssh_pass: worker
+ansible_sudo_pass: worker

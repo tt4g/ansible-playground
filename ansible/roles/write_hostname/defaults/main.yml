@@ -1,0 +1,5 @@
+---
+write_hostname__dest_path: /tmp/ansible_hostname
+write_hostname__owner: root
+write_hostname__group: root
+write_hostname__mode: "0640"

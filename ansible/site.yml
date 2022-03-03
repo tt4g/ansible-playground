@@ -1,0 +1,3 @@
+---
+- ansible.builtin.import_playbook: ansible_playground_debian_group.yml
+- ansible.builtin.import_playbook: ansible_playground_redhat_group.yml

@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/vim,visualstudiocode,ansible,ansibletower
-# Edit at https://www.toptal.com/developers/gitignore?templates=vim,visualstudiocode,ansible,ansibletower
+# Created by https://www.toptal.com/developers/gitignore/api/vim,ansible,ansibletower,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=vim,ansible,ansibletower,visualstudiocode
 
 ### Ansible ###
 *.retry
@@ -57,14 +57,19 @@ tags
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-*.code-workspace
+!.vscode/*.code-snippets
 
 # Local History for Visual Studio Code
 .history/
+
+# Built Visual Studio Code Extensions
+*.vsix
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/vim,visualstudiocode,ansible,ansibletower
+# Support for Project snippet scope
+
+# End of https://www.toptal.com/developers/gitignore/api/vim,ansible,ansibletower,visualstudiocode

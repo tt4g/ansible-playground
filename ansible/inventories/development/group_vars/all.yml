@@ -1,0 +1,5 @@
+---
+
+# List all group shared variables.
+# Example:
+#   ntp_server: "ntp.example.com"

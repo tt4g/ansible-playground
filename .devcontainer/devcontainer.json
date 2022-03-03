@@ -1,0 +1,16 @@
+{
+	"name": "ansible-playground",
+
+    "dockerComposeFile": [
+        "../docker-compose.yml",
+        "./docker-compose.extended.yml"
+    ],
+    "service": "ansible-playground-control",
+    "workspaceFolder": "/workspace",
+    "settings": {},
+    "extensions": [
+		"redhat.ansible",
+        "wholroyd.jinja"
+	]
+	// "remoteUser": "vscode"
+}
