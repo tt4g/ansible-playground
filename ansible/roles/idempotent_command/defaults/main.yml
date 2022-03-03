@@ -1,0 +1,3 @@
+idempotent_command__path: /tmp/idempotent_command
+idempotent_command__content: |-
+  Hello, World!
