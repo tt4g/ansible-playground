@@ -2,5 +2,5 @@ ansible_python_interpreter: /usr/local/bin/python
 ansible_connection: ssh
 ansible_port: 22
 ansible_user: worker
-ansible_ssh_pass: worker
-ansible_sudo_pass: worker
+ansible_ssh_pass: "{{ valut__ansible_ssh_pass }}"
+ansible_sudo_pass: "{{ valut__ansible_sudo_pass }}"
