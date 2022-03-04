@@ -1,0 +1,4 @@
+service_assertion__service:
+  - name: "ssh"
+    source: "sysv"
+    state: "running"

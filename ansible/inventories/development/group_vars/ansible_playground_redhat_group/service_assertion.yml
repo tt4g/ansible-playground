@@ -1,0 +1,5 @@
+service_assertion__service:
+  - name: "sshd.service"
+    source: "systemd"
+    state: "running"
+    status: "enabled"

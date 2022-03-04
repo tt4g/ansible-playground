@@ -1,0 +1,75 @@
+---
+- block:
+  - name: assert service['name'] is defined
+    ansible.builtin.assert:
+      that:
+        - __service_assertion__service_name | length > 0
+      fail_msg: >-
+        'name' is not defined.
+      success_msg: >-
+        'name' is defined.
+
+  - name: assert service facts is found
+    ansible.builtin.assert:
+      that:
+        - service_assertion__service_facts__target | length > 0
+      fail_msg: >-
+        service '{{ __service_assertion__service_name }}' is not found.
+      success_msg: >-
+        service '{{ __service_assertion__service_name }}' is found.
+
+  - name: assert service.source
+    ansible.builtin.assert:
+      that:
+        - __service_assertion__service_source == service_assertion__service_facts__target_source
+      fail_msg: >-
+        service.source: NG
+        (expect '{{ __service_assertion__service_source }}'
+        but actual '{{ service_assertion__service_facts__target_source }}')
+      success_msg: >-
+        service.source: OK ('{{ __service_assertion__service_source }}')
+    when: __service_assertion__service_source | length > 0
+
+  - name: assert service.state
+    ansible.builtin.assert:
+      that:  
+        - __service_assertion__service_state == service_assertion__service_facts__target_state
+      fail_msg: >-
+        service.state: NG
+        (expect '{{ __service_assertion__service_state }}'
+        but actual '{{ service_assertion__service_facts__target_state }}')
+      success_msg: >-
+        service.state: OK ('{{ __service_assertion__service_state }}')
+    when: __service_assertion__service_state | length > 0
+
+  - name: assert service.status
+    ansible.builtin.assert:
+      that:
+        - __service_assertion__service_status == service_assertion__service_facts__target_status
+      fail_msg: >-
+        service.status: NG
+        (expect '{{ __service_assertion__service_status }}'
+        but actual '{{ service_assertion__service_facts__target_status }}')
+      success_msg: >-
+        service.status: OK ('{{ __service_assertion__service_status }}')
+    when: __service_assertion__service_status | length > 0
+
+  vars:
+    __service_assertion__service_name: >-
+      {{ __service_assertion__service['name'] | default(None) }}
+    __service_assertion__service_source: >-
+      {{ __service_assertion__service['source'] | default(None) }}
+    __service_assertion__service_state: >-
+      {{ __service_assertion__service['state'] | default(None) }}
+    __service_assertion__service_status: >-
+      {{ __service_assertion__service['status'] | default(None) }}
+
+    service_assertion__service_facts__target: >-
+      {{ None if __service_assertion__service_name is not defined
+          else service_assertion__service_facts['ansible_facts']['services'][__service_assertion__service_name] | default(None) }}
+    service_assertion__service_facts__target_source: >-
+      {{ service_assertion__service_facts__target['source'] | default(None) }}
+    service_assertion__service_facts__target_state: >-
+      {{ service_assertion__service_facts__target['state'] | default(None) }}
+    service_assertion__service_facts__target_status: >-
+      {{ service_assertion__service_facts__target['status'] | default(None) }}

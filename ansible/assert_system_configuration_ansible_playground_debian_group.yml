@@ -1,0 +1,5 @@
+---
+- hosts: ansible_playground_debian_group
+  gather_facts: true
+  roles:
+    - role: service_assertion

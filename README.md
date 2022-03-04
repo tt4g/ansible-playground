@@ -38,9 +38,9 @@ fingerprint が登録されていないサーバーへの接続が拒否され�
 `ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook ...` で fingerprint を
 まとめて登録しながら Playbook を実行することが出来る。
 
-### Run Playbook
+#### 構成変更
 
-Ansible の Playbook [ansible/site.yml](./ansible/site.yml) を実行する。
+[ansible/site.yml](./ansible/site.yml) を実行する。
 
 ```bash
 $ docker-compose exec -it ansible-playground-control ansible-playbook \
@@ -58,4 +58,14 @@ $ docker-compose exec ansible-playground-control /bin/bash -l
 $ ansible-playbook \
   -i /ansible/inventories/development/hosts.ini \
   /ansible/site.yml
+```
+
+### 構成の検証
+
+[ansible/site.yml](./ansible/site.yml) を実行する。
+
+```bash
+$ docker-compose exec -it ansible-playground-control ansible-playbook \
+  -i /ansible/inventories/development/hosts.ini \
+  /ansible/assert_system_configuration.yml
 ```

@@ -1,0 +1,32 @@
+---
+- name: collect service facts
+  ansible.builtin.service_facts:
+  register: service_assertion__service_facts
+
+# `service_assertion__service` に辞書形式で期待するサービスの状態を定義することで
+# サービス状態を検証できる。
+#
+# Example:
+#   service_assertion__service:
+#     - name: "sshd.service"
+#       source: "systemd"
+#       state: "running"
+#       status: "enabled"
+#
+# NOTE: `ansible.builtin.include_tasks` を使用して `block` と `loop` を使用する。
+#  `ansible.builtin.service_facts` が返すオブジェクトはネストした `dict` になっているため
+#  サービスごとの状態にアクセスすためにはネスト辞書データアクセスが必須になる。
+#  検証のためにネストしたデータにアクセスを繰り返したくないため、タスク実行時に一時的な変数を
+#  用意して、辞書データへのアクセス回数を減らしたかった。
+#  `block` を使用することで `block` 内のタスクでのみ参照可能な変数を定義できるが、
+#  Ansible 2.9 時点で `block` と `loop` は組み合わせて使用することが出来ない。
+#  代替方法として `block` でタスク定義をしたタスクファイルを
+#  `ansible.builtin.include_tasks` で読み込みすることで、 `block` と `loop` を使用して
+#  組み合わせて使用できるため、該当の方法を使用している。
+#  See: https://github.com/ansible/ansible/issues/13262
+- name: assert service
+  ansible.builtin.include_tasks: service_assertion.yml
+  loop: "{{ service_assertion__service }}"
+  loop_control:
+    label: "{{ __service_assertion__service.name }}"
+    loop_var: __service_assertion__service
