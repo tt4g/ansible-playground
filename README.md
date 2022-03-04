@@ -38,6 +38,8 @@ fingerprint が登録されていないサーバーへの接続が拒否され�
 `ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook ...` で fingerprint を
 まとめて登録しながら Playbook を実行することが出来る。
 
+### Playbook
+
 #### 構成変更
 
 [ansible/site.yml](./ansible/site.yml) を実行する。
@@ -60,7 +62,7 @@ $ ansible-playbook \
   /ansible/site.yml
 ```
 
-### 構成の検証
+#### 構成の検証
 
 [ansible/site.yml](./ansible/site.yml) を実行する。
 
