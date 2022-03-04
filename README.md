@@ -77,6 +77,122 @@ $ docker-compose exec -it ansible-playground-control ansible-playbook \
 
 ## ベストプラクティス
 
+Ansible 公式のベストプラクティスをベースにしたもの。
+
+See: https://docs.ansible.com/ansible/2.9/user_guide/playbooks_best_practices.html
+
+### プロジェクト構成
+
+Ansible ベストプラクティスで紹介されている以下のプロジェクト構成を踏襲する。
+
+https://docs.ansible.com/ansible/2.9/user_guide/playbooks_best_practices.html#alternative-directory-layout
+
+> ```
+> inventories/
+>    production/
+>       hosts               # inventory file for production servers
+>       group_vars/
+>          group1.yml       # here we assign variables to particular groups
+>          group2.yml
+>       host_vars/
+>          hostname1.yml    # here we assign variables to particular systems
+>          hostname2.yml
+>
+>    staging/
+>       hosts               # inventory file for staging environment
+>       group_vars/
+>          group1.yml       # here we assign variables to particular groups
+>          group2.yml
+>       host_vars/
+>          stagehost1.yml   # here we assign variables to particular systems
+>          stagehost2.yml
+>
+> library/
+> module_utils/
+> filter_plugins/
+>
+> site.yml
+> webservers.yml
+> dbservers.yml
+>
+> roles/
+>     common/
+>     webtier/
+>     monitoring/
+>     fooapp/
+> ```
+
+#### site.yml
+
+`site.yml` をシステムを構成するための起点となる Playbook とする。
+
+**TIP:** `site.yml` 以外の名称を使用しても良いが、システムを構成するための Playbook
+ファイルがどれなのかは、分かりやすいように `README.md` に記載しておくこと。
+
+`site.yml` は `import_playbook` で各グループを構成するための Playbook をインポートする。
+
+`site.yml` の例:
+
+```yaml
+---
+- import_playbook: webservers.yml
+- import_playbook: dbservers.yml
+```
+
+`site.yml` でインポートされているファイルは、実際にホストを構成するための `role` 定義などを行う。
+
+`webservers.yml` の例:
+
+```yaml
+---
+- hosts: webservers
+  roles:
+    - common
+    - webtier
+```
+
+**TIP:** この構成にすることで、 `site.yml` を実行することでシステム全体を更新する。
+`webservers.yml` を実行することで `webservers` グループだけを更新するといった
+Ansible の作業対象の分解ができる。
+
+例えば、「システム全体をローリングで再起動する」ようなタスクを実行するための Playbook を
+作成した場合も `site.yml` と同じ考え方で Playbook ファイルを作成することを推奨する。
+
+各 Playbook ファイルの役割は、後から分かりやすいように `README.md` に記載しておくこと。
+
+#### inventories
+
+`inventories/` の直下に本番環境、ステージング環境ごとのサブフォルダを用意し、
+`hosts` (or `hosts.ini`, `hosts.yml`) に環境ごとの管理ホストを列挙する。
+
+**TIP:** `inventories/<env_name>` の `<env_name>` 部分は環境名であり、
+本番環境は `production` のような情報を `README.md` に残しておくこと。
+
+Ansible のベストプラクティスとの相違点として `inventories/<env_name>/group_vars/` の
+直下には `hosts` ファイルに列挙されているグループ名のディレクトリを用意し、
+その配下に `group_vars/<group_name>/<role_name>.yml` の形式で各 `role` の変数を定義した
+ファイルを設置する。
+この構成を守ることで、 `role` の変数がどこで定義されているか探しやすくなる。
+
+Ansible のコアモジュール変数は `group_vars/<group_name>/ansible.yml` に定義する。
+
+全てのグループで共通の変数は `group_vars/all` に定義する。
+Ansible のドキュメントに記載されているが、全てのホストは暗黙のルールで `all` グループに
+属しているため、 `group_vars/all` で定義された変数は全てのホストに自動的に適用される。
+
+`inventories/<env_name>/host_vars` も原則として `inventories/<env_name>/group_vars`
+のルールを踏襲する。
+
+`intro_inventory/` 以下の各ファイルに記載する内容については
+https://docs.ansible.com/ansible/2.9/user_guide/intro_inventory.html
+を参照する。
+
+#### roles
+
+`roles/` 以下の構成は
+https://docs.ansible.com/ansible/2.9/user_guide/playbooks_reuse_roles.html
+を参照。
+
 ### 機密情報の暗号化
 
 Ansible でパスワードなどの機密情報を暗号化して保存するために
