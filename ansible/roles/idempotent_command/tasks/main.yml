@@ -1,16 +1,16 @@
 ---
 - name: idempotent_command check idempotent file
   ansible.builtin.command: cat "{{ idempotent_command__path }}"
-  register: idempotent_command__check_result
+  register: __idempotent_command__check_result
   changed_when: false
   failed_when: false
 
 - name: idempotent_command debug
   ansible.builtin.debug:
-    var: idempotent_command__check_result
+    var: __idempotent_command__check_result
 
 - name: idempotent_command write content
   ansible.builtin.shell: |-
     echo -n {{ idempotent_command__content | quote }} 
     > {{ idempotent_command__path | quote }}
-  when: idempotent_command__check_result.stdout != idempotent_command__content
+  when: __idempotent_command__check_result.stdout != idempotent_command__content
