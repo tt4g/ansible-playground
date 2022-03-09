@@ -1,0 +1,56 @@
+---
+# `ansible.builtin.package_facts` は Debian 系OSディストリビューションでは
+# `python-apt` が必要になる。
+# See: https://docs.ansible.com/ansible/2.9/modules/package_facts_module.html
+#  > For Debian-based systems python-apt package must be installed on targeted hosts.
+- name: install python3-apt
+  block:
+    - name: apt install python3-apt
+      become: true
+      ansible.builtin.apt:
+        name: "python3-apt=2.2.1"
+        state: present
+        update_cache: false
+    - name: pip install python-apt
+      ansible.builtin.pip:
+        name: "python3-apt"
+  when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
+
+- name: collect pacakge facts
+  ansible.builtin.package_facts:
+    manager: "{{ package_assertion__package_manager }}"
+    strategy: "first"
+  register: __package_assertion__package_facts
+
+# インストール済みパッケージを検証する。
+#
+# `__package_assertion__package` に辞書形式で記載されたインストールされていることを期待する
+# パッケージ情報と、実際のパッケージ状態を突き合せて検証する。
+#
+# OSディストリビューションによっては、`arch` が取得できないことがある。
+# `name` と `version` はOSディストリビューションに関係なく取得できる。
+#
+# Example:
+#   package_assertion__package:
+#     - name: "openssh-server"
+#       version: "8.0p1"
+#       arch: "x86_64"
+#
+# NOTE: `ansible.builtin.include_tasks` を使用して `block` と `loop` を使用する。
+#  `ansible.builtin.service_facts` が返すオブジェクトはネストした `dict` になっているため
+#  パッケージごとの状態にアクセスすためにはネスト辞書データアクセスが必須になる。
+#  検証のためにネストしたデータにアクセスを繰り返したくないため、タスク実行時に一時的な変数を
+#  用意して、辞書データへのアクセス回数を減らしたかった。
+#  `block` を使用することで `block` 内のタスクでのみ参照可能な変数を定義できるが、
+#  Ansible 2.9 時点で `block` と `loop` は組み合わせて使用することが出来ない。
+#  代替方法として `block` でタスク定義をしたタスクファイルを
+#  `ansible.builtin.include_tasks` で読み込みすることで、 `block` と `loop` を使用して
+#  組み合わせて使用できるため、該当の方法を使用している。
+#  See: https://github.com/ansible/ansible/issues/13262
+- name: assert package
+  ansible.builtin.include_tasks: package_assertion.yml
+  loop: "{{ package_assertion__package }}"
+  loop_control:
+    label: "{{ __package_assertion__package['name'] }}"
+    loop_var: __package_assertion__package
+

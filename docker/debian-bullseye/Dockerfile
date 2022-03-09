@@ -11,6 +11,8 @@ ARG USER_PASSWORD=worker
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     openssh-server sudo \
+    # For `ansible.builtin.package_facts` module.
+    python3-apt=2.2.1 \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/*
 

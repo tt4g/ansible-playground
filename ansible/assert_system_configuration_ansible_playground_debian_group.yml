@@ -2,4 +2,6 @@
 - hosts: ansible_playground_debian_group
   gather_facts: true
   roles:
+    # TODO: Could not install python3-apt on Docker image `python:bullseye`
+#    - role: package_assertion
     - role: service_assertion

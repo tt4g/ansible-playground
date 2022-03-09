@@ -1,0 +1,61 @@
+---
+- block:
+  - name: assert package['name'] is defined
+    ansible.builtin.assert:
+      that:
+        - __package_assertion__package_name | length > 0
+      fail_msg: >-
+        'name' is not defined.
+      success_msg: >-
+        'name' is defined.
+
+  - name: assert package facts is found
+    ansible.builtin.assert:
+      that:
+        - __package_assertion__package_facts__target | length > 0
+      fail_msg: >-
+        package '{{ __package_assertion__package_name }}' is not found.
+      success_msg: >-
+        package '{{ __package_assertion__package_name }}' is found.
+
+  - name: assert package.version
+    ansible.builtin.assert:
+      that:
+        - __package_assertion__package_version == __package_assertion__package_facts__target_version
+      fail_msg: >-
+        pacakge '{{ __package_assertion__package_name }}' version: NG
+        (expect '{{ __package_assertion__package_version }}'
+        but actual '{{ __package_assertion__package_facts__target_version }}')
+      success_msg: >-
+        package '{{ __package_assertion__package_name }}' version: OK ('{{ __package_assertion__package_version }}')
+    when: __package_assertion__package_version | length > 0
+
+  - name: assert package.arch
+    ansible.builtin.assert:
+      that:
+        - __package_assertion__package_arch == __package_assertion__package_facts__target_arch
+      fail_msg: >-
+        pacakge '{{ __package_assertion__package_name }}' version: NG
+        (expect '{{ __package_assertion__package_arch }}'
+        but actual '{{ __package_assertion__package_facts__target_arch }}')
+      success_msg: >-
+        package '{{ __package_assertion__package_name }}' version: OK ('{{ __package_assertion__package_arch }}')
+    when: __package_assertion__package_arch | length > 0
+
+  vars:
+    __package_assertion__package_name: >-
+      {{ __package_assertion__package['name'] | default(None) }}
+    __package_assertion__package_version: >-
+      {{ __package_assertion__package['version'] | default(None) }}
+    __package_assertion__package_arch: >-
+      {{ __package_assertion__package['arch'] | default(None) }}
+
+    # `ansible.builtin.package_facts` モジュールは、パッケージ名ごとに複数の情報を返す。
+    # ここでは最初に見つかったパッケージ情報のみを使用するため `[0]` で最初の要素のみを取り出す。
+    __package_assertion__package_facts__target: >-
+      {{ None if __package_assertion__package_name is not defined 
+          else __package_assertion__package_facts['ansible_facts']['packages'][__package_assertion__package_name][0] | default(None) }}
+    __package_assertion__package_facts__target_version: >-
+      {{ __package_assertion__package_facts__target['version'] | default(None) }}
+    __package_assertion__package_facts__target_arch: >-
+      {{ __package_assertion__package_facts__target['arch'] | default(None) }}

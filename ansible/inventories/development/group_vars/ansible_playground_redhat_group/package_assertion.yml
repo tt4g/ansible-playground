@@ -1,0 +1,8 @@
+package_assertion__package_manager: "auto"
+package_assertion__package:
+  - name: "openssh-server"
+    version: "8.0p1"
+    arch: "x86_64"
+  - name: "sudo"
+    version: "1.8.29"
+    arch: "x86_64"

@@ -1,0 +1,6 @@
+package_assertion__package_manager: "apt"
+package_assertion__package:
+  - name: "openssh-server"
+    version: "1:8.4p1-5"
+  - name: "sudo"
+    version: "1.9.5p2-3"
