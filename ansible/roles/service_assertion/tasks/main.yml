@@ -1,10 +1,15 @@
 ---
 - name: collect service facts
   ansible.builtin.service_facts:
-  register: service_assertion__service_facts
+  register: __service_assertion__service_facts
 
-# `service_assertion__service` に辞書形式で期待するサービスの状態を定義することで
-# サービス状態を検証できる。
+# サービスの状態を検証する。
+#
+# `service_assertion__service` に辞書形式で記載されたサービスの状態と実際のサービス状態を
+# 突き合せて検証する。
+#
+# OSディストリビューションによっては、`source`, `status` が取得できないことがある。
+# `name` と `state` はOSディストリビューションに関係なく取得できる。
 #
 # Example:
 #   service_assertion__service:
@@ -28,5 +33,5 @@
   ansible.builtin.include_tasks: service_assertion.yml
   loop: "{{ service_assertion__service }}"
   loop_control:
-    label: "{{ __service_assertion__service.name }}"
+    label: "{{ __service_assertion__service['name'] }}"
     loop_var: __service_assertion__service
