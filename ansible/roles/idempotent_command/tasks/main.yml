@@ -14,3 +14,4 @@
     echo -n {{ idempotent_command__content | quote }} 
     > {{ idempotent_command__path | quote }}
   when: __idempotent_command__check_result.stdout != idempotent_command__content
+  changed_when: false
