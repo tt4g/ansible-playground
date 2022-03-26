@@ -1,0 +1,3 @@
+---
+redhat_8__ansible_setup__python_package: "python39-3.9.6-2.module+el8.5.0+12204+54860423"
+redhat_8__ansible_setup__additional_package: []

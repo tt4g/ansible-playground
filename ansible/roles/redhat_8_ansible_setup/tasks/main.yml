@@ -1,0 +1,32 @@
+---
+# RedHat 8 に Ansible を動作させるために最低限必要な Python パッケージをインストールする。
+#
+# Ansible の多くのモジュールは、 `python` コマンドが使用できなければ動作しないため、
+# 管理対象ホストには最低限度 `python` がインストールされている必要がある言い換えることが出来る。
+# 
+# RedHat 8 はシステム管理用の `python` が `/usr/libexec/platform-python` に存在するが、
+# 環境変数 `PATH` が通っていないため、フルパス指定しなければ使用することが出来ない。
+# また、システム管理用に存在するため Ansible 実行のために使うのは避けるべきである。
+#
+# このモジュールは RedHat 8 に `dnf` コマンドでユーザーが利用する `python` をインストールする。
+#
+# なお、 `become: true` が指定されているため管理者権限への昇格が必要になる。
+- name: Ansible install minimum requires packages
+  become: true
+  ansible.builtin.dnf:
+    name: >-
+      {{
+        (
+          [redhat_8__ansible_setup__python_package]
+          + (redhat_8__ansible_setup__additional_package | default([]))
+        )
+      }}
+    state: present
+    allow_downgrade: false
+    autoremove: false
+    bugfix: false
+    disable_gpg_check: false
+    install_weak_deps: true
+  # Python がインストールされていない可能性があるため、 RHEL システム管理用 Python を使用する。
+  vars:
+    ansible_python_interpreter: "/usr/libexec/platform-python"
